@@ -1,0 +1,72 @@
+.App{
+    height: 100vh;
+    display: grid;
+    grid-template-rows: auto 1fr;
+}
+
+.editor-card{
+    grid-row: 1 / 2;
+}
+
+.preview-card{
+    grid-row: 1 / 2;
+}
+
+.menu-navigations{
+    grid-row: 1 / 2;
+    margin: 4px;
+    display: grid;
+    grid-template-columns: auto auto 1fr auto;
+}
+
+.main-menu{
+    grid-column: 1 / 2;
+}
+
+.menu-navigations .savename{
+    margin: 0 8px;
+    grid-column: 2 / 4;
+}
+
+.logout-button{
+    grid-column: 4 / 5;
+}
+
+.editor-preview{
+    grid-row: 2 / 3;
+    display: grid;
+    grid-template-columns: auto auto 1fr 8px 1fr;
+}
+
+.menu{
+    grid-column: 1 / 2;
+    width: 48px;
+}
+
+.menu-subpanel{
+    width: 274px;
+    transition: .4s;
+}
+
+.file{
+    width: 40px;
+    height: 40px;
+    margin: 0 4px 4px 4px;
+    border-radius: 4px;
+    transition: .4s;
+    cursor: pointer;
+}
+
+.file:hover{
+    background-color: var(--colorNeutralBackground1Hover);
+}
+
+.editor{
+    grid-column: 3 / 4;
+    display: grid;
+}
+
+.markdown-preview{
+    grid-column: 5 / 6;
+    display: grid;
+}
