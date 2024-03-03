@@ -48,6 +48,10 @@
     transition: .4s;
 }
 
+.menu-subpanel-area{
+    margin-right: 8px;
+}
+
 .file{
     width: 40px;
     height: 40px;
@@ -55,6 +59,10 @@
     border-radius: 4px;
     transition: .4s;
     cursor: pointer;
+    font-family: Segoe MDL2 Assets;
+    font-size: 24px;
+    text-align: center;
+    line-height: 40px;
 }
 
 .file:hover{
