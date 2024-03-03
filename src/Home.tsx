@@ -83,53 +83,57 @@ const Home = () => {
 
     const fileList = {
         filename: "root",
-        children: [{
-            filename: "etc",
-            children: [
-                {
-                    filename: "environment",
-                    children: null
-                }
-            ]
-        },
-        {
-            filename: "usr",
-            children: [
-                {
-                    filename: "bin",
-                    children: [
-                        {
-                            filename: "ls",
-                            children: null
-                        },
-                        {
-                            filename: "echo",
-                            children: null
-                        }
-                        ,
-                        {
-                            filename: "cat",
-                            children: null
-                        }
-                    ]
-                }
-            ]
-        }]
+        children: [
+            {
+                filename: "tmp",
+                children: null
+            },
+            {
+                filename: "etc",
+                children: [
+                    {
+                        filename: "environment",
+                        children: null
+                    }
+                ]
+            },
+            {
+                filename: "usr",
+                children: [
+                    {
+                        filename: "bin",
+                        children: [
+                            {
+                                filename: "ls",
+                                children: null
+                            },
+                            {
+                                filename: "echo",
+                                children: null
+                            }
+                            ,
+                            {
+                                filename: "cat",
+                                children: null
+                            }
+                        ]
+                    }
+                ]
+            }]
     };
 
     const FileNodes = (props: any) => {
-        console.log(props)
         const files = props.fileList.map((item: any) => {
             if(item.children == null){
+                const filePath = (props.path ? props.path : "/") + item.filename;
                 return (
-                    <TreeItem itemType="leaf">
+                    <TreeItem itemType="leaf" onClick={(e) => setSaveName(filePath)}>
                         <TreeItemLayout>{item.filename}</TreeItemLayout>
                     </TreeItem>);
             }
-            return FileNodes({fileList: item.children, filename: item.filename});
+            return FileNodes({fileList: item.children, filename: item.filename, path: (props.path ? props.path : "/") + item.filename + "/"});
         });
 
-        console.log(props.filename)
         const filename = () => {
             if(props.filename != null){
                 return <TreeItemLayout>{props.filename}</TreeItemLayout>
@@ -160,7 +164,7 @@ const Home = () => {
                         <Mainmenu />
                     </div>
                     <div className='savename'>
-                        <Input placeholder='保存名' style={{ width: '100%' }} onChange={(e) => setSaveName(e.target.value)} />
+                        <Input placeholder='保存名' style={{ width: '100%' }} onChange={(e) => setSaveName(e.target.value)} value={saveName} />
                     </div>
                     <div className='logout-button'>
                         <Button>サインアウト</Button>
