@@ -4,7 +4,9 @@ import './MarkdownRenderer'
 import * as react from '@monaco-editor/react';
 import { useRef, useState } from 'react';
 import MarkdownRenderer from './MarkdownRenderer';
-import { Button, Card, Dialog, DialogActions, DialogBody, DialogContent, DialogSurface, DialogTitle, DialogTrigger, FluentProvider, Input, Menu, MenuItem, MenuList, MenuPopover, MenuTrigger, webLightTheme, TreeItem, Tree, TreeItemLayout } from '@fluentui/react-components';
+import { Button, Card, Dialog, DialogActions, DialogBody, DialogContent, DialogSurface, DialogTitle, DialogTrigger, FluentProvider, Input, Menu, MenuItem, MenuList, MenuPopover, MenuTrigger, webLightTheme, TreeItem, Tree, TreeItemLayout, Breadcrumb, BreadcrumbItem, BreadcrumbButton, BreadcrumbDivider } from '@fluentui/react-components';
+// import '@fluentui/react-components';
+
 
 
 const Home = () => {
@@ -155,6 +157,59 @@ const Home = () => {
         return tree;
     }
 
+    const [path, setPath] = useState('/');
+
+    const Bread = () => {
+        const dirs: string[] = path.split('/').slice(1, -1);
+        return (
+            <Breadcrumb>
+                {
+                    dirs.map((value: string, index: number) => {
+                        const divider = index == dirs.length - 1 ? <></> : <BreadcrumbDivider />
+                        return (
+                            <>
+                            <BreadcrumbItem>
+                                <BreadcrumbButton>{value}</BreadcrumbButton>
+                            </BreadcrumbItem>
+                            {divider}
+                            </>
+                        );
+                    })
+                }
+            </Breadcrumb>)
+    }
+
+    const FileList = () => {
+        return (
+            <Tree>
+            {
+                fileList.children.map((value: any, index: number) => {
+                    if(value.children == null){
+                        // ファイル
+                        return (
+                            <TreeItem itemType="leaf">
+                                <TreeItemLayout onClick={() => {setSaveName(path + value.filename)}}>
+                                    <div className='file-icon'>&#xE7C3;</div>
+                                    <div className='file-list-name'>{value.filename}</div>
+                                </TreeItemLayout>
+                            </TreeItem>
+                        )
+                    }
+                    // ディレクトリ
+                    return (
+                        <TreeItem itemType="leaf">
+                            <TreeItemLayout onClick={(e) => {console.log(value.filename); setPath(path + value.filename + "/")}}>
+                                <div className='file-icon'>&#xE8B7;</div>
+                                <div className='file-list-name'>{value.filename}</div>
+                            </TreeItemLayout>
+                        </TreeItem>
+                    )
+                })
+            }
+            </Tree>
+        )
+    }
+
     return (
         <FluentProvider theme={webLightTheme}>
             <NoFilenameDialog />
@@ -178,26 +233,9 @@ const Home = () => {
                     </div>
                     <div className='menu-subpanel' style={fileStyle}>
                         <div className='menu-subpanel-area'>
-                            <FileNodes fileList={fileList.children} />
-                            {/* <Tree>
-                                <TreeItem itemType='branch'>
-                                    <TreeItemLayout>dir</TreeItemLayout>
-
-                                    <Tree>
-                                        <TreeItem itemType="branch">
-                                            <TreeItemLayout>dir2</TreeItemLayout>
-                                        </TreeItem>
-
-                                        <TreeItem itemType="leaf">
-                                            <TreeItemLayout>file1</TreeItemLayout>
-                                        </TreeItem>
-                                    </Tree>
-                                </TreeItem>
-
-                                <TreeItem itemType="leaf">
-                                    <TreeItemLayout>file2</TreeItemLayout>
-                                </TreeItem>
-                            </Tree> */}
+                            <Bread />
+                            <FileList />
+                            {/* <FileNodes fileList={fileList.children} /> */}
                         </div>
                     </div>
                     <div className='editor'>
