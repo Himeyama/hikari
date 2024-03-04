@@ -160,7 +160,7 @@ const Home = () => {
     const [path, setPath] = useState('/');
 
     const Bread = () => {
-        const dirs: string[] = path.split('/').slice(1, -1);
+        const dirs: string[] = ["root"].concat(path.split('/').slice(1, -1));
         return (
             <Breadcrumb>
                 {
@@ -179,11 +179,13 @@ const Home = () => {
             </Breadcrumb>)
     }
 
+    const [fileListPointer, setFileListPointer]: any[] = useState(fileList.children);
+
     const FileList = () => {
         return (
             <Tree>
             {
-                fileList.children.map((value: any, index: number) => {
+                fileListPointer.map((value: any, index: number) => {
                     if(value.children == null){
                         // ファイル
                         return (
@@ -198,7 +200,19 @@ const Home = () => {
                     // ディレクトリ
                     return (
                         <TreeItem itemType="leaf">
-                            <TreeItemLayout onClick={(e) => {console.log(value.filename); setPath(path + value.filename + "/")}}>
+                            <TreeItemLayout onClick={(e) => {
+                                    console.log(value.filename);
+                                    const fullPath = path + value.filename + "/";
+                                    setPath(fullPath)
+
+                                    const newFileListPointer: object = (((dirName: string, fileListPointer: any[]) => { for(const dir of fileListPointer){if(dir.filename == dirName) return dir} })(value.filename, fileListPointer)).children;
+                                    setFileListPointer(newFileListPointer);
+                                    // console.log(newFileListPointer);
+                                    // setFileListPointer(fileListPointer.children[value.filename].children)
+                                    // const dirs: string[] = fullPath.split('/').slice(1, -1);
+                                    // console.log(dirs)
+                                    
+                                }}>
                                 <div className='file-icon'>&#xE8B7;</div>
                                 <div className='file-list-name'>{value.filename}</div>
                             </TreeItemLayout>

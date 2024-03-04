@@ -50,6 +50,8 @@
 
 .menu-subpanel-area{
     margin-right: 8px;
+    display: grid;
+    grid-template-rows: 32px 1fr;
 }
 
 .file{
