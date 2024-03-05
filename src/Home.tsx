@@ -175,7 +175,7 @@ const Home = () => {
 
                                     let target = parent;
                                     let node: any[] = [];
-                                    const limit = 100;
+                                    const limit = 20;
                                     for(let i = 0; i < limit; i++){
                                         if(target == null) break;
                                         let txt = target.textContent;
@@ -214,10 +214,13 @@ const Home = () => {
     const [fileListPointer, setFileListPointer]: any[] = useState(fileList.children);
 
     const FileList = () => {
+        const dirs = fileListPointer.filter((e: any) => {return e.children != null}).sort((a: any, b: any) => {return a.filename > b.filename ? 1 : 0});
+        const files = fileListPointer.filter((e: any) => {return e.children == null}).sort((a: any, b: any) => {return a.filename > b.filename ? 1 : 0});
+        const dirAndFiles = dirs.concat(files);
         return (
             <Tree>
             {
-                fileListPointer.map((value: any, index: number) => {
+                dirAndFiles.map((value: any, index: number) => {
                     if(value.children == null){
                         // ファイル
                         return (
@@ -236,17 +239,20 @@ const Home = () => {
                                     console.log(value.filename);
                                     const fullPath = path + value.filename + "/";
                                     setPath(fullPath)
-
-                                    const newFileListPointer: object = (((dirName: string, fileListPointer: any[]) => { for(const dir of fileListPointer){if(dir.filename == dirName) return dir} })(value.filename, fileListPointer)).children;
-                                    setFileListPointer(newFileListPointer);
-                                    // console.log(newFileListPointer);
-                                    // setFileListPointer(fileListPointer.children[value.filename].children)
-                                    // const dirs: string[] = fullPath.split('/').slice(1, -1);
-                                    // console.log(dirs)
-                                    
+                                const newFileListPointer: object = 
+                                    (((dirName: string, flp: any[]) => {
+                                        for (const dir of flp) {
+                                            if (dir.filename == dirName)
+                                                return dir
+                                        }
+                                    })(value.filename, dirAndFiles)).children;
+                                    setFileListPointer(newFileListPointer);                                    
                                 }}>
-                                <div className='file-icon'>&#xE8B7;</div>
-                                <div className='file-list-name'>{value.filename}</div>
+                                <div className='file-icon-list-name dir-icon'>
+                                    <div className='file-icon-fill'>&#xE188;</div>
+                                    <div className='file-icon'>&#xE8B7;</div>
+                                    <div className='file-list-name'>{value.filename}</div>
+                                </div>
                             </TreeItemLayout>
                         </TreeItem>
                     )

@@ -55,6 +55,7 @@
 }
 
 .file{
+    user-select: none;
     width: 40px;
     height: 40px;
     margin: 0 4px 4px 4px;
@@ -81,6 +82,27 @@
     display: grid;
 }
 
+.file-icon-list-name{
+    display: grid;
+    grid-template-columns: auto auto;
+    grid-template-rows: auto;
+}
+
+.file-icon-fill{
+    font-family: Segoe MDL2 Assets;
+    margin-right: 8px;
+    font-size: 18px;
+    display: inline-block;
+    padding-top: 6px;
+    user-select: none;
+    grid-column: 1 / 2;
+    grid-row: 1 / 2;
+}
+
+.file-icon-list-name.dir-icon .file-icon-fill{
+    color: #FEE082;
+}
+
 .file-icon{
     font-family: Segoe MDL2 Assets;
     margin-right: 8px;
@@ -88,6 +110,12 @@
     display: inline-block;
     padding-top: 6px;
     user-select: none;
+    grid-column: 1 / 2;
+    grid-row: 1 / 2;
+}
+
+.file-icon-list-name.dir-icon .file-icon{
+    color: #AC7E00;
 }
 
 .file-list-name{
@@ -95,4 +123,6 @@
     display: inline-block;
     vertical-align: top;
     user-select: none;
+    grid-column: 2 / 3;
+    grid-row: 1 / 2;
 }
