@@ -26,6 +26,20 @@ const Home = () => {
             </Menu>);
     }
 
+    const HelpMenu = () => {
+        return (
+            <Menu>
+                <MenuTrigger disableButtonEnhancement>
+                    <Button>ヘルプ</Button>
+                </MenuTrigger>
+                <MenuPopover>
+                    <MenuList>
+                        <MenuItem onClick={onSaveClick}>アプリについて</MenuItem>
+                    </MenuList>
+                </MenuPopover>
+            </Menu>);
+    }
+
     const NoFilenameDialog = () => {
         return (
             <Dialog open={filenameErrorOpen}>
@@ -45,7 +59,8 @@ const Home = () => {
 
     const [editorText, setEditorText] = useState('');
     const editorRef = useRef("");
-    const [fileStyle, setFileStyle] = useState({ width: 0 });
+    const explorerWidth = localStorage.getItem('openExplorer') == 'true' ? 274 : 0
+    const [fileStyle, setFileStyle] = useState({ width: explorerWidth });
     const [saveName, setSaveName] = useState("");
     const [filenameErrorOpen, setFilenameErrorOpen] = useState(false);
 
@@ -59,11 +74,14 @@ const Home = () => {
             setEditorText(value);
     }
 
+    // エクスプローラーアイコンをクリック
     const fileClick = () => {
         if (fileStyle.width == 0) {
             setFileStyle({ width: 274 });
+            localStorage.setItem('openExplorer', "true");
         } else {
             setFileStyle({ width: 0 });
+            localStorage.setItem('openExplorer', "false");
         }
     }
 
@@ -272,6 +290,9 @@ const Home = () => {
                     </div>
                     <div className='savename'>
                         <Input placeholder='保存名' style={{ width: '100%' }} onChange={(e) => setSaveName(e.target.value)} value={saveName} />
+                    </div>
+                    <div className='help-button'>
+                        <HelpMenu />
                     </div>
                     <div className='logout-button'>
                         <Button>サインアウト</Button>

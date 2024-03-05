@@ -16,7 +16,7 @@
     grid-row: 1 / 2;
     margin: 4px;
     display: grid;
-    grid-template-columns: auto auto 1fr auto;
+    grid-template-columns: auto auto 1fr auto auto;
 }
 
 .main-menu{
@@ -28,8 +28,13 @@
     grid-column: 2 / 4;
 }
 
-.logout-button{
+.help-button{
+    margin-right: 8px;
     grid-column: 4 / 5;
+}
+
+.logout-button{
+    grid-column: 5 / 6;
 }
 
 .editor-preview{
