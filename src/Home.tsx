@@ -160,7 +160,7 @@ const Home = () => {
     const [path, setPath] = useState('/');
 
     const Bread = () => {
-        const dirs: string[] = ["root"].concat(path.split('/').slice(1, -1));
+        const dirs: string[] = ["/"].concat(path.split('/').slice(1, -1));
         return (
             <Breadcrumb>
                 {
@@ -169,7 +169,39 @@ const Home = () => {
                         return (
                             <>
                             <BreadcrumbItem>
-                                <BreadcrumbButton>{value}</BreadcrumbButton>
+                                <BreadcrumbButton onClick={(e) => {
+                                    let button: any = e.target
+                                    const parent: any = button.parentElement;
+
+                                    let target = parent;
+                                    let node: any[] = [];
+                                    const limit = 100;
+                                    for(let i = 0; i < limit; i++){
+                                        if(target == null) break;
+                                        let txt = target.textContent;
+                                        node.push(txt)
+                                        target = target.previousElementSibling;
+                                    }
+                                    node = node.filter((e) => {return e != ""}).reverse().slice(1);
+
+                                    let fListPointer: any = fileList.children
+                                    for(let i = 0; i < node.length; i++){
+                                        let target;
+                                        for(const target_candidate of fListPointer){
+                                            if(target_candidate.filename == node[i]){
+                                                target = target_candidate;
+                                                break;
+                                            }
+                                        }
+                                        fListPointer = target.children;
+                                    }
+                                    if(node.length == 0){
+                                        setPath('/');
+                                    }else{
+                                        setPath("/" + node.join("/") + "/");
+                                    }
+                                    setFileListPointer(fListPointer);
+                                }}>{value}</BreadcrumbButton>
                             </BreadcrumbItem>
                             {divider}
                             </>
