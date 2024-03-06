@@ -16,11 +16,7 @@
     grid-row: 1 / 2;
     margin: 4px;
     display: grid;
-    grid-template-columns: auto auto 1fr auto auto;
-}
-
-.main-menu{
-    grid-column: 1 / 2;
+    grid-template-columns: auto auto auto 1fr;
 }
 
 .menu-navigations .savename{
@@ -28,9 +24,25 @@
     grid-column: 2 / 4;
 }
 
-.help-button{
+.MenuButton {
+    padding: 5px 8px !important;
+    min-width: unset !important;
+    border: solid 1px transparent !important;
+}
+
+.main-menu{
+    grid-column: 1 / 2;
     margin-right: 8px;
-    grid-column: 4 / 5;
+}
+
+.edit-button{
+    margin-right: 8px;
+    grid-column: 2 / 3;
+}
+
+.help-button{
+    /* margin-right: 8px; */
+    grid-column: 3 / 4;
 }
 
 .logout-button{
@@ -130,4 +142,10 @@
     user-select: none;
     grid-column: 2 / 3;
     grid-row: 1 / 2;
+}
+
+.input-new-filename{
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 8px;
 }
