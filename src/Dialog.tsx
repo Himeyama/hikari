@@ -1,17 +1,23 @@
 import { Button, Dialog, DialogActions, DialogBody, DialogContent, DialogSurface, DialogTitle, Input } from "@fluentui/react-components";
+import { t } from "i18next";
+import { useTranslation } from "react-i18next";
+
+
 
 const NewDocumentDialog = (props: any) => {
+    const { t } = useTranslation();
+
     return (
         <Dialog open={props.newDocumentDialogOpen}>
             <DialogSurface>
                 <DialogBody>
-                    <DialogTitle>ファイル名を入力してください</DialogTitle>
+                    <DialogTitle>{t('Please enter a filename')}</DialogTitle>
                     <DialogContent className='input-new-filename'>
                         <Input />
-                        <Button appearance='primary'>決定</Button>
+                        <Button appearance='primary'>{t('OK')}</Button>
                     </DialogContent>
                     <DialogActions>
-                        <Button appearance="secondary" onClick={() => props.setNewDocumentDialogOpen(false)}>閉じる</Button>
+                        <Button appearance="secondary" onClick={() => props.setNewDocumentDialogOpen(false)}>{t('Close')}</Button>
                     </DialogActions>
                 </DialogBody>
             </DialogSurface>
@@ -23,12 +29,12 @@ const HelpDialog = (props: any) => {
         <Dialog open={props.aboutDialogOpen}>
             <DialogSurface>
                 <DialogBody>
-                    <DialogTitle>アプリについて</DialogTitle>
+                    <DialogTitle>{t('About this app')}</DialogTitle>
                     <DialogContent>
-                        <div>このアプリはドキュメントを作成するサービスを提供しています</div>
+                        <div>{t('This app provide service to make documents')}</div>
                     </DialogContent>
                     <DialogActions>
-                        <Button appearance="secondary" onClick={() => props.setAboutDialogOpen(false)}>閉じる</Button>
+                        <Button appearance="secondary" onClick={() => props.setAboutDialogOpen(false)}>{t('Close')}</Button>
                     </DialogActions>
                 </DialogBody>
             </DialogSurface>

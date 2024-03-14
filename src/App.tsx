@@ -22,7 +22,11 @@ const App = () => {
           "Export to PDF": "PDF にエクスポート",
           "Edit": "編集",
           "Help": "ヘルプ",
-          "About this app": "このアプリについて"
+          "About this app": "このアプリについて",
+          "Please enter a filename": "ファイル名を入力してください",
+          "OK": "決定",
+          "Close": "閉じる",
+          "This app provide service to make documents": "このアプリはドキュメントを作成するサービスを提供しています"
         }
       }
     },
