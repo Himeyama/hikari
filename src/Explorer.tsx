@@ -64,7 +64,10 @@ const FileList = (props: any) => {
                     // ファイル
                     return (
                         <TreeItem itemType="leaf">
-                            <TreeItemLayout onClick={() => {props.setSaveName(props.path + value.filename)}}>
+                            <TreeItemLayout onClick={() => {
+                                    props.setSaveName(props.path + value.filename);
+                                    console.log(props.path+ value.filename);
+                                }}>
                                 <div className='file-icon'>&#xE7C3;</div>
                                 <div className='file-list-name'>{value.filename}</div>
                             </TreeItemLayout>

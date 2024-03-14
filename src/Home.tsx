@@ -100,7 +100,7 @@ const Home = () => {
                     <div className='menu-subpanel' style={fileStyle}>
                         <div className='menu-subpanel-area'>
                             <Bread setPath={setPath} setFileListPointer={setFileListPointer} fileList={fileList} path={path} setSaveName={setSaveName} />
-                            <FileList fileListPointer={fileListPointer} setFileListPointer={setFileListPointer} path={path} setPath={setPath}/>
+                            <FileList fileListPointer={fileListPointer} setFileListPointer={setFileListPointer} path={path} setPath={setPath} setSaveName={setSaveName} />
                         </div>
                     </div>
                     <div className='editor'>
