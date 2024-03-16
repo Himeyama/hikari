@@ -1,3 +1,24 @@
+const fs = require('fs');
+const makeTree = (path: string) => {
+    let file_list: any = [];
+    const files = fs.readdirSync(path);
+    for (const filename of files) {
+        const full_path = path + '/' + filename;
+        if (fs.statSync(full_path).isFile()) {
+            file_list.push({
+                filename: filename,
+                children: null
+            });
+        } else {
+            file_list.push({
+                filename: filename,
+                children: makeTree(full_path)
+            });
+        }
+    }
+    return file_list;
+}
+
 const Server = (port: number) => {
     const crypto = require("crypto");
     const sqlite3 = require('sqlite3').verbose();
@@ -10,7 +31,7 @@ const Server = (port: number) => {
             console.log(`テーブルは存在します。`);
         } else {
             console.log(`テーブルは存在しません。`);
-            db.run("CREATE TABLE users(uuid text, username text, encrypted_password text, session_id text, totp text, email text)");
+            db.run("CREATE TABLE users(uuid text, username text, encrypted_password text, session_id text, user_type text, totp text, email text)");
         }
     });
     db.close();
@@ -23,6 +44,10 @@ const Server = (port: number) => {
     app.use(express.static('./build'));
 
     app.get("/login", (_req: any, res: any) => {
+        res.sendFile(__dirname + '/build/index.html')
+    })
+
+    app.get("/admin", (_req: any, res: any) => {
         res.sendFile(__dirname + '/build/index.html')
     })
 
@@ -64,7 +89,33 @@ const Server = (port: number) => {
             res.send(JSON.stringify({status: status}));
         })
         db.close();
-        
+    })
+
+    app.post("/cgi-bin/document-structure", (req: any, res: any) => {
+        const username: string = req.body.username;
+        const session_id: string = req.body.session_id;
+
+        const db = new sqlite3.Database("test.db");
+        db.get(`SELECT * FROM users WHERE username = "${username}" AND session_id = "${session_id}"`, (_err: any, row: any) => {
+            res.type("application/json");
+            let resTree: string = "{}";
+            if(row){
+                const dir = `data/${row.uuid}`;
+                if(!fs.existsSync(dir)){
+                    fs.mkdirSync(dir);
+                    console.log("ユーザーディレクトリを作成しました。")
+                }
+
+                let tree = makeTree(dir);
+                tree = {
+                    filename: "root",
+                    children: tree
+                };
+                resTree = JSON.stringify(tree, null, 4);
+            }
+            res.send(resTree);
+        })
+        db.close();
     })
 
     app.post("/cgi-bin/login", (req: any, res: any) => {
@@ -87,10 +138,12 @@ const Server = (port: number) => {
                 res.type("application/json");
                 let session_id: string = "";
                 let status = "NG";
+                let user_type = "";
                 if(result){
                     console.log("認証 OK")
                     status = "OK";
                     session_id = sessionUpdate(username);
+                    user_type = row?.user_type;
                 }else{
                     console.log("認証 NG")
                 }
@@ -98,7 +151,8 @@ const Server = (port: number) => {
                 res.send(JSON.stringify({
                     username: username,
                     session_id: session_id,
-                    status: status
+                    status: status,
+                    user_type: user_type
                 }));
             });
         });

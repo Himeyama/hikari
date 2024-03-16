@@ -9,7 +9,7 @@ const SignIn = () => {
     
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
-    const [cookies, setCookie, removeCookie] = useCookies(['username', 'session_id']);
+    const [cookies, setCookie, removeCookie] = useCookies(['username', 'session_id', 'user_type']);
 
     const OnSignIn = () => {
         fetch("http://localhost:8080/cgi-bin/login", {
@@ -21,10 +21,16 @@ const SignIn = () => {
         }).then((res: any) => {
             const json = res.json();
             json.then((json: any) => {
+                console.log(json);
                 if(json.status == "OK"){
                     setCookie("username", json.username);
                     setCookie("session_id", json.session_id);
-                    window.location.href = "/";
+                    setCookie("user_type", json.user_type);
+                    if(json.user_type == "administrators"){
+                        window.location.href = "/admin";
+                    }else{
+                        window.location.href = "/";
+                    }
                 }else{
                     console.log("Authentication failure");
                 }
@@ -51,7 +57,11 @@ const SignIn = () => {
             json.then((json: any) => {
                 if(json.status == "OK"){
                     console.log("Session verification successful");
-                    window.location.href = "/";
+                    if(json.user_type == "administrators"){
+                        window.location.href = "/admin";
+                    }else{
+                        window.location.href = "/";
+                    }
                 }else{
                     console.log("Session validation failed");
                     setCookie("session_id", "");

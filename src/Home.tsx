@@ -11,48 +11,12 @@ import { EditMenu, HelpMenu, MainMenu } from './Menu';
 import { ExplorerClick } from './SideMenu';
 import { useCookies } from 'react-cookie';
 
-const fileList = {
+let fileList = {
     filename: "root",
-    children: [
-        {
-            filename: "tmp",
-            children: null
-        },
-        {
-            filename: "etc",
-            children: [
-                {
-                    filename: "environment",
-                    children: null
-                }
-            ]
-        },
-        {
-            filename: "usr",
-            children: [
-                {
-                    filename: "bin",
-                    children: [
-                        {
-                            filename: "ls",
-                            children: null
-                        },
-                        {
-                            filename: "echo",
-                            children: null
-                        }
-                        ,
-                        {
-                            filename: "cat",
-                            children: null
-                        }
-                    ]
-                }
-            ]
-        }]
+    children: []
 };
 
-
+let refreshSignal: boolean = true;
 const Home = () => {
     const [editorText, setEditorText] = useState('');
     const editorRef = useRef("");
@@ -65,6 +29,29 @@ const Home = () => {
     const [path, setPath] = useState('/');
     const [fileListPointer, setFileListPointer]: any[] = useState(fileList.children);
     const [cookies, setCookie, removeCookie] = useCookies(['username', 'session_id']);
+
+    if (refreshSignal) {
+        fetch("http://localhost:8080/cgi-bin/document-structure", {
+            method: 'POST',
+            body: JSON.stringify({ username: cookies.username, session_id: cookies.session_id }),
+            headers: {
+                "Content-Type": "application/json",
+            }
+        }).then((res: any) => {
+            const json = res.json();
+            json.then((json: any) => {
+                if (json.status != "{}") {
+                    fileList = json;
+                    setFileListPointer(fileList.children);
+                } else {
+                    console.log("Get document structure failure");
+                }
+            })
+        }).catch((err: any) => {
+            console.log(err);
+        });
+        refreshSignal = false;
+    }
 
     const OnAuth = () => {
         if(cookies.session_id == ""){
@@ -79,25 +66,6 @@ const Home = () => {
         }
 
         return;
-
-        fetch("http://localhost:8080/cgi-bin/auth", {
-            method: 'POST',
-            body: JSON.stringify({username: cookies.username, session_id: cookies.session_id}),
-            headers: {
-                "Content-Type": "application/json"
-            }
-        }).then((res: any) => {
-            const json = res.json();
-            json.then((json: any) => {
-                if(json.status == "OK"){
-                    console.log("Session verification successful");
-                }else{
-                    console.log("Session validation failed");
-                    setCookie("session_id", "");
-                    window.location.href = "/login";
-                }
-            })
-        });
     }
 
     const handleEditorDidMount = (editor: any, _monaco: any) => {

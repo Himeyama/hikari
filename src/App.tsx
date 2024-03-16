@@ -4,6 +4,7 @@ import Home from './Home';
 import SignIn from './SignIn';
 import { initReactI18next } from 'react-i18next';
 import i18n from 'i18next';
+import Admin from './Admin';
 
 
 const App = () => {
@@ -26,7 +27,9 @@ const App = () => {
           "Please enter a filename": "ファイル名を入力してください",
           "OK": "決定",
           "Close": "閉じる",
-          "This app provide service to make documents": "このアプリはドキュメントを作成するサービスを提供しています"
+          "This app provide service to make documents": "このアプリはドキュメントを作成するサービスを提供しています",
+          "Create an account": "アカウント作成",
+          "Create": "作成"
         }
       }
     },
@@ -39,6 +42,7 @@ const App = () => {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<SignIn />} />
+          <Route path="/admin" element={<Admin />} />
         </Routes>
       </BrowserRouter>
     </div>
