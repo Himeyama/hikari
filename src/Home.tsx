@@ -9,6 +9,7 @@ import { NewDocumentDialog, HelpDialog, NoFilenameDialog } from './Dialog';
 import { Bread, FileList } from './Explorer';
 import { EditMenu, HelpMenu, MainMenu } from './Menu';
 import { ExplorerClick } from './SideMenu';
+import { useCookies } from 'react-cookie';
 
 const fileList = {
     filename: "root",
@@ -63,6 +64,41 @@ const Home = () => {
     const [aboutDialogOpen, setAboutDialogOpen] = useState(false);
     const [path, setPath] = useState('/');
     const [fileListPointer, setFileListPointer]: any[] = useState(fileList.children);
+    const [cookies, setCookie, removeCookie] = useCookies(['username', 'session_id']);
+
+    const OnAuth = () => {
+        if(cookies.session_id == ""){
+            console.log("Sign out");
+            window.location.href = "/login";
+            return;
+        }
+
+        if(!cookies.session_id){
+            console.log("No session id");
+            return;
+        }
+
+        return;
+
+        fetch("http://localhost:8080/cgi-bin/auth", {
+            method: 'POST',
+            body: JSON.stringify({username: cookies.username, session_id: cookies.session_id}),
+            headers: {
+                "Content-Type": "application/json"
+            }
+        }).then((res: any) => {
+            const json = res.json();
+            json.then((json: any) => {
+                if(json.status == "OK"){
+                    console.log("Session verification successful");
+                }else{
+                    console.log("Session validation failed");
+                    setCookie("session_id", "");
+                    window.location.href = "/login";
+                }
+            })
+        });
+    }
 
     const handleEditorDidMount = (editor: any, _monaco: any) => {
         editorRef.current = editor;
@@ -74,6 +110,7 @@ const Home = () => {
             setEditorText(value);
     }
 
+    OnAuth();
     return (
         <FluentProvider theme={webLightTheme}>
             <NewDocumentDialog newDocumentDialogOpen={newDocumentDialogOpen} setNewDocumentDialogOpen={setNewDocumentDialogOpen} />

@@ -1,8 +1,10 @@
 import { Button, Menu, MenuDivider, MenuItem, MenuList, MenuPopover, MenuTrigger } from "@fluentui/react-components";
 import { t } from "i18next";
+import { useCookies } from "react-cookie";
 import { useTranslation } from "react-i18next";
 
 const MainMenu = (props: any) => {
+    const [cookies, setCookie, removeCookie] = useCookies(['username', 'session_id']);
     const { t } = useTranslation();
     
     const onSaveClick = () => {
@@ -13,6 +15,10 @@ const MainMenu = (props: any) => {
     const onExportClick = () => {
         props.setFilenameErrorOpen(true);
         console.log(`エクスポート`);
+    }
+
+    const onSignOut = () => {
+        setCookie("session_id", "");
     }
 
     return (
@@ -27,7 +33,7 @@ const MainMenu = (props: any) => {
                     <MenuItem onClick={onExportClick}>{t('Export to Markdown')}</MenuItem>
                     <MenuItem>{t('Export to PDF')}</MenuItem>
                     <MenuDivider />
-                    <MenuItem>{t('Sign out')}</MenuItem>
+                    <MenuItem onClick={onSignOut}>{t('Sign out')}</MenuItem>
                 </MenuList>
             </MenuPopover>
         </Menu>);
