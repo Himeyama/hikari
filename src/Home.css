@@ -152,3 +152,34 @@
     grid-template-columns: 1fr auto;
     gap: 8px;
 }
+
+pre code{
+    background-color: unset;
+}
+
+code.hljs {
+    line-height: 20px;
+    background-color: #F6F8FA;
+}
+
+code.hljs .hljs-list{
+    grid-template-columns: auto 1fr;
+    display: grid;
+}
+
+.hljs-li{
+    display: inline-block;
+    margin-left: 16px;
+}
+
+.hljs-ln{
+    display: inline-block;
+    color: #736A82;
+    width: 24px;
+    text-align: right;
+    user-select: none;
+}
+
+pre code.hljs {
+    display: grid !important;
+}

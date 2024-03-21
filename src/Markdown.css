@@ -1,15 +1,16 @@
 body {
     background-color: #FFFFFF;
-    
+
 }
 
-.markdown-preview{
+.markdown-preview {
     font-family: "BIZ UDPGothic", "Meiryo";
 }
 
 p {
     font-size: 16px;
     line-height: 24px;
+    margin: 0 0 16px 0;
 }
 
 hr {
@@ -65,22 +66,23 @@ h6 {
     font-size: 13.6px;
 }
 
-blockquote{
+blockquote {
     border-left: solid 4px #D0D7DE;
     padding: 0 16px;
     margin: 0;
 }
 
-table{
+table {
     border-collapse: collapse;
 }
 
-table td, table th{
+table td,
+table th {
     border: solid 1px #D0D7DE;
     padding: 6px 13px;
 }
 
-table tr:nth-child(2n){
+table tr:nth-child(2n) {
     background-color: #F6F8FA;
 }
 
@@ -88,16 +90,17 @@ li.task-list-item {
     list-style: none;
 }
 
-li{
+li {
     line-height: 24px;
 }
 
-code.hljs{
+code.hljs {
     text-wrap: wrap;
     word-break: break-word;
+    padding: 16px;
 }
 
-code{
+code {
     background-color: #EFF1F3;
     color: #E17092;
     padding: 2.72px 5.44px;
@@ -105,4 +108,12 @@ code{
     text-wrap: wrap;
     line-height: 26px;
     font-family: "Cascadia Mono", "Meiryo";
+}
+
+pre {
+    margin: 0 0 16px 0;
+}
+
+table{
+    margin-bottom: 16px;
 }

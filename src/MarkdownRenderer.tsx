@@ -2,15 +2,16 @@
 import 'highlight.js/styles/github.css'; // ハイライトのスタイルを選択
 import hljs from 'highlight.js/lib/core';
 import c from 'highlight.js/lib/languages/c';
+import text from 'highlight.js/lib/languages/plaintext';
+import bash from 'highlight.js/lib/languages/bash';
 import javascript from 'highlight.js/lib/languages/javascript';
 import xml from 'highlight.js/lib/languages/xml';
 
-import Markdown from 'react-markdown';
-import rehypeHighlight from 'rehype-highlight';
-import remarkGfm from 'remark-gfm'
 import { Marked } from 'marked';
 import { markedHighlight } from 'marked-highlight';
 
+hljs.registerLanguage('bash', bash);
+hljs.registerLanguage('text', text);
 hljs.registerLanguage('c', c);
 hljs.registerLanguage('javascript', javascript);
 hljs.registerLanguage('xml', xml);
@@ -20,25 +21,26 @@ const MarkdownRenderer = (props: any) => {
   const markdown = props.markdown;
   const marked = new Marked(markedHighlight({
     langPrefix: 'hljs language-',
-    highlight(code, lang, info) {
-      const language = hljs.getLanguage(lang) ? lang : 'plaintext';
+    highlight(code, lang, _info) {
+      const language = hljs.getLanguage(lang) ? lang : 'text';
       const lines = hljs.highlight(code, { language }).value.split("\n");
-      const table = document.createElement("table");
-      table.className = "hljs-ln";
-      const tbody = document.createElement("tbody");
-      table.append(tbody);
+      const ul = document.createElement("ul");
+      let i = 1;
       for(const line of lines){
-        const tr = document.createElement("tr");
-        tbody.append(tr);
-        const ln = document.createElement("td");
-        tr.append(ln);
-        const lncode = document.createElement("td");
-        tr.append(lncode);
-        lncode.innerHTML = line;
+        const li = document.createElement("div");
+        const div = document.createElement("div");
+        const ln = document.createElement("div");
+        li.className = "hljs-list"
+        div.className = "hljs-li";
+        ln.className = "hljs-ln";
+        li.append(ln);
+        ln.innerText = `${i}`;
+        li.append(div);
+        div.innerHTML = line;
+        ul.append(li);
+        i += 1;
       }
-      console.log(table.innerHTML);
-      console.log(hljs.highlight(code, { language }).value);
-      return table.innerHTML;
+      return ul.innerHTML;
     }
   }));
   const html = marked.parse(markdown);
@@ -47,7 +49,6 @@ const MarkdownRenderer = (props: any) => {
     return (<div></div>)
   }
 
-  // console.log(html);
   return (
     <div dangerouslySetInnerHTML={{__html: html}} />
   );
