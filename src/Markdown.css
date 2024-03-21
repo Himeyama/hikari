@@ -1,0 +1,108 @@
+body {
+    background-color: #FFFFFF;
+    
+}
+
+.markdown-preview{
+    font-family: "BIZ UDPGothic", "Meiryo";
+}
+
+p {
+    font-size: 16px;
+    line-height: 24px;
+}
+
+hr {
+    background-color: #D0D7DE;
+    height: 4px;
+    margin: 24px 0;
+    border: unset;
+}
+
+h1,
+h2 {
+    border-bottom: solid 1px #D8DEE4;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    margin: 24px 0 16px 0;
+}
+
+h1 {
+    line-height: 40px;
+    font-size: 32px;
+    padding: 0 0 9.6px 0;
+}
+
+h2 {
+    line-height: 30px;
+    font-size: 24px;
+    padding: 0 0 7.2px 0;
+}
+
+h3 {
+    line-height: 25px;
+    font-size: 20px;
+}
+
+h4 {
+    line-height: 20px;
+    font-size: 16px;
+}
+
+h5 {
+    line-height: 17.5px;
+    font-size: 14px;
+}
+
+h6 {
+    line-height: 17px;
+    font-size: 13.6px;
+}
+
+blockquote{
+    border-left: solid 4px #D0D7DE;
+    padding: 0 16px;
+    margin: 0;
+}
+
+table{
+    border-collapse: collapse;
+}
+
+table td, table th{
+    border: solid 1px #D0D7DE;
+    padding: 6px 13px;
+}
+
+table tr:nth-child(2n){
+    background-color: #F6F8FA;
+}
+
+li.task-list-item {
+    list-style: none;
+}
+
+li{
+    line-height: 24px;
+}
+
+code.hljs{
+    text-wrap: wrap;
+    word-break: break-word;
+}
+
+code{
+    background-color: #EFF1F3;
+    color: #E17092;
+    padding: 2.72px 5.44px;
+    border-radius: 6px;
+    text-wrap: wrap;
+    line-height: 26px;
+    font-family: "Cascadia Mono", "Meiryo";
+}

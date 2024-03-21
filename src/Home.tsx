@@ -1,4 +1,5 @@
 import './Home.css';
+import './Markdown.css'
 import './MarkdownRenderer'
 
 import * as react from '@monaco-editor/react';

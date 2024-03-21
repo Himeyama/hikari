@@ -27,7 +27,7 @@
       window.addEventListener('resize', () => {
           const editor = monaco.editor.getEditors()[0];
           if (editor) {
-            editor.layout();
+            editor.layout({height: 0, width: 0});
           }
         });
     </script>
