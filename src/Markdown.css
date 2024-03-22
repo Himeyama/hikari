@@ -1,12 +1,3 @@
-body {
-    background-color: #FFFFFF;
-
-}
-
-.markdown-preview {
-    font-family: "BIZ UDPGothic", "Meiryo";
-}
-
 p {
     font-size: 16px;
     line-height: 24px;
@@ -116,4 +107,33 @@ pre {
 
 table{
     margin-bottom: 16px;
+}
+
+@media (prefers-color-scheme: dark) {
+    hr {
+        background-color: #30363D;
+    }
+    
+    h1,
+    h2 {
+        border-bottom: solid 1px #262B32;
+    }
+    
+    blockquote {
+        border-left: solid 4px #30363D;
+    }
+    
+    table td,
+    table th {
+        border: solid 1px #30363D;
+    }
+    
+    table tr:nth-child(2n) {
+        background-color: #161B22;
+    }
+    
+    code {
+        background-color: #343942;
+        color: #F695C6;
+    }
 }

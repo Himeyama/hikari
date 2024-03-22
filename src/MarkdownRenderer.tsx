@@ -1,5 +1,5 @@
-// import Showdown from 'react-showdown';
-import 'highlight.js/styles/github.css'; // ハイライトのスタイルを選択
+import 'highlight.js/styles/github.css';
+import 'highlight.js/styles/github-dark.css';
 import hljs from 'highlight.js/lib/core';
 import c from 'highlight.js/lib/languages/c';
 import text from 'highlight.js/lib/languages/plaintext';

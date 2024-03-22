@@ -5,7 +5,7 @@ import './MarkdownRenderer'
 import * as react from '@monaco-editor/react';
 import { useRef, useState } from 'react';
 import MarkdownRenderer from './MarkdownRenderer';
-import { Card, FluentProvider, webLightTheme } from '@fluentui/react-components';
+import { Card, FluentProvider, webDarkTheme, webLightTheme } from '@fluentui/react-components';
 import { NewDocumentDialog, HelpDialog, NoFilenameDialog } from './Dialog';
 import { Bread, FileList } from './Explorer';
 import { EditMenu, HelpMenu, MainMenu } from './Menu';
@@ -69,19 +69,25 @@ const Home = () => {
         return;
     }
 
-    const handleEditorDidMount = (editor: any, _monaco: any) => {
-        editorRef.current = editor;
-    }
+    // const handleEditorDidMount = (editor: any, _monaco: any) => {
+    //     editorRef.current = editor;
+    // }
 
     const handleEditorChange = (value: string | undefined, _ev: any) => {
-        console.log(value)
         if (value)
             setEditorText(value);
     }
 
     OnAuth();
+
+    const [theme, setTheme] = useState(true);
+    const mql = window.matchMedia("(prefers-color-scheme: dark)");
+    mql.addEventListener("change", (e) => {
+        setTheme(e.matches);
+    });
+
     return (
-        <FluentProvider theme={webLightTheme}>
+        <FluentProvider theme={theme ? webDarkTheme : webLightTheme}>
             <NewDocumentDialog newDocumentDialogOpen={newDocumentDialogOpen} setNewDocumentDialogOpen={setNewDocumentDialogOpen} />
             <NoFilenameDialog filenameErrorOpen={filenameErrorOpen} setFilenameErrorOpen={setFilenameErrorOpen} />
             <HelpDialog aboutDialogOpen={aboutDialogOpen} setAboutDialogOpen={setAboutDialogOpen} />
@@ -110,17 +116,21 @@ const Home = () => {
                         </div>
                     </div>
                     <div className='editor'>
-                        <Card className="editor-card">
-                            <react.Editor className='monaco-editor' defaultLanguage="markdown" defaultValue=""
-                                onMount={handleEditorDidMount}
+                        <div className="editor-card">
+                            <react.Editor
+                                className='monaco-editor'
+                                defaultLanguage="markdown"
+                                defaultValue=""
+                                theme={theme ? "vs-dark" : "light"}
+                                // onMount={handleEditorDidMount}
                                 onChange={handleEditorChange} />
-                        </Card>
+                        </div>
                     </div>
 
                     <div className='markdown-preview'>
-                        <Card className="preview-card">
+                        <div className="preview-card">
                             <MarkdownRenderer markdown={editorText} />
-                        </Card>
+                        </div>
                     </div>
                 </div>
             </div>

@@ -183,3 +183,21 @@ code.hljs .hljs-list{
 pre code.hljs {
     display: grid !important;
 }
+
+.markdown-preview {
+    font-family: "BIZ UDPGothic", "Meiryo";
+}
+
+.preview-card{
+    padding: 16px;
+}
+
+@media (prefers-color-scheme: dark) {
+    code.hljs {
+        background-color: #161B22;
+    }
+
+    .hljs-ln{
+        color: #858585;
+    }
+}
