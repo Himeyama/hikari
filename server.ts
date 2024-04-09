@@ -1,5 +1,6 @@
 const path = require('path');
 const fs = require('fs');
+
 const makeTree = (path: string) => {
     let file_list: any = [];
     const files = fs.readdirSync(path);
@@ -72,6 +73,20 @@ const Server = (port: number) => {
         db.close();
     }
 
+    const authenticate2 = async (username: string, session_id: string): Promise<string> => {
+        return new Promise((resolve, reject) => {
+            const db = new sqlite3.Database("test.db");
+            db.get(`SELECT * FROM users WHERE username = "${username}" AND session_id = "${session_id}"`, (_err: any, row: any) => {
+                db.close();
+                if (row) {
+                    resolve("OK");
+                } else {
+                    reject("NG");
+                }
+            });
+        });
+    };
+
     app.post("/cgi-bin/auth", (req: any, res: any) => {
         const username: string = req.body.username;
         const session_id: string = req.body.session_id;
@@ -94,6 +109,18 @@ const Server = (port: number) => {
                 callback(null);
             }
         });
+    }
+
+    const getUUIDFromDatabase2 = async (username: string, session_id: string): Promise<string | null> => {
+        const sqlite3 = require('sqlite3');
+        const { open } = require('sqlite');
+        const db = await open({ filename: 'test.db', driver: sqlite3.Database });
+        const row = await db.get(`SELECT * FROM users WHERE username = ? AND session_id = ?`, [username, session_id]);
+        if (row) {
+            return row.uuid;
+        } else {
+            return null;
+        }
     }
 
     // ディレクトリ情報を読み取る関数
@@ -184,6 +211,65 @@ const Server = (port: number) => {
                 }
             })(status));
         });
+    });
+
+    const readFileAsBase64 = (filePath: string): Promise<string> => {
+        return new Promise<string>((resolve, reject) => {
+            fs.access(filePath, fs.constants.F_OK, (err: NodeJS.ErrnoException | null) => {
+                if (err) {
+                    resolve('');
+                } else {
+                    fs.readFile(filePath, (err: NodeJS.ErrnoException | null, data: Buffer) => {
+                        if (err) {
+                            reject(err);
+                        } else {
+                            resolve(data.toString('base64'));
+                        }
+                    });
+                }
+            });
+        });
+    }
+
+    app.post("/cgi-bin/load", async (req: any, res: any) => {
+        const username: string = req.body.username;
+        const session_id: string = req.body.session_id;
+        const filePath: string = req.body.file_path;
+    
+        console.log("\nPOST /cgi-bin/load");
+        console.log(`${username}@${session_id}`);
+        console.log(req.body);
+    
+        try {
+            const status: string = await authenticate2(username, session_id);
+            if (status !== "OK") {
+                console.log("認証失敗");
+                throw new Error("Authentication Failed");
+            }
+    
+            console.log("認証成功");
+            console.log(`filePath: ${filePath}`);
+    
+            const uuid = await getUUIDFromDatabase2(username, session_id);
+            if (!uuid) {
+                console.error("Unable to get uuid");
+                throw new Error("Unable to get uuid");
+            }
+    
+            let realFilePath = path.join("data", uuid);
+            realFilePath = path.join(realFilePath, filePath);
+    
+            const base64data = await readFileAsBase64(realFilePath);
+            console.log(`data: ${base64data}`);
+            console.log(`uuid: ${uuid}`);
+    
+            res.type("application/json");
+            res.send(JSON.stringify({status: status, data: base64data}));
+        } catch (err: any) {
+            console.error(err.message);
+            res.type("application/json");
+            res.send(JSON.stringify({status: "ERROR", error: err.message}));
+        }
     });
 
     app.post("/cgi-bin/login", (req: any, res: any) => {
