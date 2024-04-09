@@ -3,9 +3,9 @@ import './Markdown.css'
 import './MarkdownRenderer'
 
 import * as react from '@monaco-editor/react';
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import MarkdownRenderer from './MarkdownRenderer';
-import { Card, FluentProvider, webDarkTheme, webLightTheme } from '@fluentui/react-components';
+import { FluentProvider, webDarkTheme, webLightTheme } from '@fluentui/react-components';
 import { NewDocumentDialog, HelpDialog, NoFilenameDialog } from './Dialog';
 import { Bread, FileList } from './Explorer';
 import { EditMenu, HelpMenu, MainMenu } from './Menu';
@@ -17,10 +17,11 @@ let fileList = {
     children: []
 };
 
+const url = "http://localhost:8080/cgi-bin/document-structure";
+
 let refreshSignal: boolean = true;
 const Home = () => {
     const [editorText, setEditorText] = useState('');
-    const editorRef = useRef("");
     const explorerWidth = localStorage.getItem('openExplorer') == 'true' ? 274 : 0
     const [fileStyle, setFileStyle] = useState({ width: explorerWidth });
     const [saveName, setSaveName] = useState("");
@@ -31,8 +32,9 @@ const Home = () => {
     const [fileListPointer, setFileListPointer]: any[] = useState(fileList.children);
     const [cookies, setCookie, removeCookie] = useCookies(['username', 'session_id']);
 
+    // 仮想ディレクトリの内容を取得
     if (refreshSignal) {
-        fetch("http://localhost:8080/cgi-bin/document-structure", {
+        fetch(url, {
             method: 'POST',
             body: JSON.stringify({ username: cookies.username, session_id: cookies.session_id }),
             headers: {
@@ -69,10 +71,6 @@ const Home = () => {
         return;
     }
 
-    // const handleEditorDidMount = (editor: any, _monaco: any) => {
-    //     editorRef.current = editor;
-    // }
-
     const handleEditorChange = (value: string | undefined, _ev: any) => {
         if (value)
             setEditorText(value);
@@ -80,8 +78,8 @@ const Home = () => {
 
     OnAuth();
 
-    const [theme, setTheme] = useState(true);
     const mql = window.matchMedia("(prefers-color-scheme: dark)");
+    const [theme, setTheme] = useState(mql.matches);
     mql.addEventListener("change", (e) => {
         setTheme(e.matches);
     });

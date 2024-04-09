@@ -1,3 +1,4 @@
+const path = require('path');
 const fs = require('fs');
 const makeTree = (path: string) => {
     let file_list: any = [];
@@ -51,22 +52,6 @@ const Server = (port: number) => {
         res.sendFile(__dirname + '/build/index.html')
     })
 
-    app.post("/cgi-bin/save/", (req: any, res: any) => {
-        const encodedName: string = req.body.name;
-        const encodedContent: string = req.body.content;
-
-        const saveName: string = Buffer.from(encodedName, 'base64').toString('utf-8');
-        const content: string = Buffer.from(encodedContent, 'base64').toString('utf-8');
-
-        // Invoke-WebRequest http://localhost:8080/cgi-bin/save/ -Body @{name="L2hvbWUvaGlrYXJpL3Rlc3Q="; content="IyBIZWxsbywgd29ybGQh"} -Method POST
-        // INSERT INTO users(uuid, username, encrypted_password) VALUES("f2d73df7-ca9f-462f-9a31-7d9515af3471", "hikari", "$2a$12$y/R.04k0y4gxe9iHyHBTvesmrGQsCS1XGGAjZ/Mnq2bw6C4lwsEua");
-
-        res.send(`${content} ${saveName}`);
-        
-        // ソルト作成
-        // [*[*?0..?9], *[*?a..?z], *[*?A..?Z], ?/, ?.].sample(22).join
-    });
-
     const sessionUpdate = (username: string): string => {
         const session_id = crypto.randomUUID();
         const db = new sqlite3.Database("test.db");
@@ -75,48 +60,131 @@ const Server = (port: number) => {
         return session_id;
     }
 
-    app.post("/cgi-bin/auth", (req: any, res: any) => {
-        const username: string = req.body.username;
-        const session_id: string = req.body.session_id;
-
+    const authenticate = (username: string, session_id: string, callback: (status: string) => void) => {
         const db = new sqlite3.Database("test.db");
         db.get(`SELECT * FROM users WHERE username = "${username}" AND session_id = "${session_id}"`, (_err: any, row: any) => {
-            res.type("application/json");
             let status: string = "NG";
             if(row){
                 status = "OK";
             }
-            res.send(JSON.stringify({status: status}));
+            callback(status);
         })
         db.close();
+    }
+
+    app.post("/cgi-bin/auth", (req: any, res: any) => {
+        const username: string = req.body.username;
+        const session_id: string = req.body.session_id;
+        console.log("\nPOST /cgi-bin/auth");
+        console.log(`${username}@${session_id}`);
+        authenticate(username, session_id, (status: string) => {
+            res.type("application/json");
+            res.send(JSON.stringify({status: status}));
+        });
+        // Invoke-WebRequest -Method Post -Uri "http://localhost:8080/cgi-bin/auth" -Body $(@{"username" = "hikari"; "session_id" = "hogehoge" } | ConvertTo-Json)
     })
+
+    const getUUIDFromDatabase = (username: string, session_id: string, callback: (uuid: string | null) => void) => {
+        const db = new sqlite3.Database("test.db");
+        db.get(`SELECT * FROM users WHERE username = "${username}" AND session_id = "${session_id}"`, (_err: any, row: any) => {
+            db.close();
+            if (row) {
+                callback(row.uuid);
+            } else {
+                callback(null);
+            }
+        });
+    }
+
+    // ディレクトリ情報を読み取る関数
+    const readDirectoryInfo = (uuid: string, callback: (resTree: string) => void) => {
+        const dir = `data/${uuid}`;
+        if (!fs.existsSync(dir)) {
+            fs.mkdirSync(dir);
+            console.log("ユーザーディレクトリを作成しました。")
+        }
+
+        let tree = makeTree(dir);
+        tree = {
+            filename: "root",
+            children: tree
+        };
+        const resTree = JSON.stringify(tree, null, 4);
+        callback(resTree);
+    }
 
     app.post("/cgi-bin/document-structure", (req: any, res: any) => {
         const username: string = req.body.username;
         const session_id: string = req.body.session_id;
 
-        const db = new sqlite3.Database("test.db");
-        db.get(`SELECT * FROM users WHERE username = "${username}" AND session_id = "${session_id}"`, (_err: any, row: any) => {
+        getUUIDFromDatabase(username, session_id, (uuid) => {
+            if (uuid) {
+                readDirectoryInfo(uuid, (resTree) => {
+                    res.type("application/json");
+                    res.send(resTree);
+                });
+            } else {
+                res.type("application/json");
+                res.send("{}");
+            }
+        });
+    })
+
+    app.post("/cgi-bin/save", (req: any, res: any) => {
+        const username: string = req.body.username;
+        const session_id: string = req.body.session_id;
+        const base64data: string = req.body.data;
+        const filePath: string = req.body.file_path;
+        
+        console.log("\nPOST /cgi-bin/save");
+        console.log(`${username}@${session_id}`);
+        console.log(req.body);
+
+        authenticate(username, session_id, (status: string) => {
+            let errorMessage = "";
+            let error = false;
             res.type("application/json");
-            let resTree: string = "{}";
-            if(row){
-                const dir = `data/${row.uuid}`;
-                if(!fs.existsSync(dir)){
-                    fs.mkdirSync(dir);
-                    console.log("ユーザーディレクトリを作成しました。")
+            
+            res.send(((status) => {
+                if(status == "OK"){
+                    console.log("認証成功");
+                    console.log(`base64data: ${base64data}`);
+                    console.log(`filePath: ${filePath}`);
+                    const content = Buffer.from(base64data, 'base64').toString('utf8');
+                    console.log(`content: ${content}`);
+
+                    getUUIDFromDatabase(username, session_id, (uuid) => {
+                        if (uuid) {
+                            let realFilePath = path.join("data", uuid);
+                            realFilePath = path.join(realFilePath, filePath);
+                            const dir = path.dirname(realFilePath);
+                            if (!fs.existsSync(dir)){
+                                fs.mkdirSync(dir, { recursive: true });
+                            }
+                            fs.writeFileSync(realFilePath, content);
+
+                            console.log(realFilePath);
+                            console.log(`uuid: ${uuid}`);
+
+                        } else {
+                            errorMessage = "Unable to get uuid";
+                            error = true;
+                        }
+                    });
+                }else{
+                    console.log("認証失敗");
+                    errorMessage = "Authentication Failed"
+                    error = true;
                 }
 
-                let tree = makeTree(dir);
-                tree = {
-                    filename: "root",
-                    children: tree
-                };
-                resTree = JSON.stringify(tree, null, 4);
-            }
-            res.send(resTree);
-        })
-        db.close();
-    })
+                if(!error){
+                    JSON.stringify({status: status});
+                }else{
+                    JSON.stringify({status: status, errorMessage: errorMessage})
+                }
+            })(status));
+        });
+    });
 
     app.post("/cgi-bin/login", (req: any, res: any) => {
         const bcrypt = require('bcrypt');
@@ -124,7 +192,6 @@ const Server = (port: number) => {
         // Invoke-WebRequest http://localhost:8080/cgi-bin/login -Method Post -Body @{username="hikari"; password="pass"}
         const username: string = req.body.username;
         const password: string = req.body.password;
-        // res.send(`${username}:${password}`);
         console.log(`${username}:${password}`)
         console.log(req.body);
 
