@@ -1,4 +1,4 @@
 username="hikari"
-session_id="0ba21cf5-f108-4b46-b3bc-9886e4ac95e4"
+session_id="e932356a-d3da-4d94-a8c8-317ae6b75414"
 body="{\"username\": \"${username}\", \"session_id\": \"${session_id}\", \"file_path\": \"/README.md\"}"
 curl -X POST -H "Content-Type: application/json" "http://localhost:8080/cgi-bin/load" -d "${body}"
